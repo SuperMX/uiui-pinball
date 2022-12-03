@@ -10546,7 +10546,7 @@ function setup() {
   document.getElementById('score').innerHTML = score;
   document.getElementById('high-score').innerHTML = highScore;
   inPlay = false;
-
+	launch();
   // engine.world.bodies.filter(findPinball).collisionFilter = { group: bufferGroup };
   var buffers = engine.world.bodies.filter(function (body) {
     return body.label === 'buffer';
@@ -10598,10 +10598,9 @@ function closeHatch() {
   hatchUp = true;
 }
 
-function launchAction(e) {
-	
+function launchAction(e, modus= "") {
   var keyCode = e.keyCode;
-  if (inPlay === false && keyCode === 38 && ballCount > 0 || inPlay === false && keyCode === 32 && ballCount > 0) {
+  if (inPlay === false && (keyCode === 38 || modus == "PLAY")&& ballCount > 0 || inPlay === false && (keyCode === 32|| modus == "PLAY") && ballCount > 0) {
     openHatch();
     var pinball = createBall();
 	playPaddle();
@@ -10619,6 +10618,9 @@ function launch() {
   window.addEventListener("keydown", function keyDown(e) {
     launchAction(e);
   });
+  document.getElementById('ball').onclick = function(e) {
+		launchAction(e, "PLAY");
+	};
 }
 
 function createBall() {
@@ -10722,26 +10724,35 @@ function removeTransition(e) {
   this.classList.remove('lose-ball');
 }
 
-function firePaddle(e) {
-	
+function firePaddle(e,direction="") {
+	var d = "";
+	if(direction != "")
+	{
+		d = direction;
+	}
   var keyCode = e.keyCode;
-  if (keyCode === 37 && leftPaddle.isSleeping === false && leftFired === false) {
+  if ((keyCode === 37|| d == "left")&& leftPaddle.isSleeping === false && leftFired === false) {
 	  playPaddle();
     leftFired = true;
     _MatterJs2.default.Body.setAngularVelocity(leftPaddle, -1);
-  } else if (keyCode === 39 && rightPaddle.isSleeping === false && rightFired === false) {
+  } else if ((keyCode === 39 || d == "right") && rightPaddle.isSleeping === false && rightFired === false) {
 	  playPaddle();
     rightFired = true;
     _MatterJs2.default.Body.setAngularVelocity(rightPaddle, 1);
   }
 }
 
-function releasePaddle(e) {
+function releasePaddle(e,direction="") {
+	var d = "";
+	if(direction != "")
+	{
+		d = direction;
+	}
   var keyCode = e.keyCode;
-  if (keyCode === 37) {
+  if (keyCode === 37|| d == "left") {
     leftFired = false;
     leftPaddle.isSleeping = false;
-  } else if (keyCode === 39) {
+  } else if (keyCode === 39|| d == "right") {
     rightFired = false;
     rightPaddle.isSleeping = false;
   }
@@ -10756,6 +10767,14 @@ function releasePaddle(e) {
 }
 
 function paddleCommands() {
+	document.getElementById('left').onclick = function(e) {
+		firePaddle(e,"left");
+		releasePaddle(e,"left");
+	};
+	document.getElementById('right').onclick = function(e) {
+		firePaddle(e,"right");
+		releasePaddle(e,"right");
+	};
   document.addEventListener("keydown", function keyDown(e) {
     firePaddle(e);
   });
@@ -10770,9 +10789,20 @@ function newGame() {
     window.removeEventListener("keydown", function keyDown(e) {
       launchAction(e);
     });
+	document.getElementById('ball').onclick = function(e) {
+		launchAction(e,"PLAY");
+	};
     document.removeEventListener("keydown", function keyDown(e) {
       firePaddle(e);
     });
+	document.getElementById('left').onclick = function(e) {
+		firePaddle(e,"left");
+		releasePaddle(e,"left");
+	};
+	document.getElementById('right').onclick = function(e) {
+		firePaddle(e,"right");
+		releasePaddle(e,"right");
+	};
     document.removeEventListener("keyup", function keyUp(e) {
       releasePaddle(e);
     });

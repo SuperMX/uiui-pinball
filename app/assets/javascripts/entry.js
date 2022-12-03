@@ -204,10 +204,11 @@ import Matter from 'Matter-js';
 	  uiui.play();
 	  play();
     let keyCode = e.keyCode;
-    if (keyCode === 37 && leftPaddle.isSleeping === false && leftFired === false) {
+	var x = e.touches.length;
+    if ((keyCode === 37 || x === 1)&& leftPaddle.isSleeping === false && leftFired === false) {
       leftFired = true;
       Matter.Body.setAngularVelocity(leftPaddle, -1);
-    } else if (keyCode === 39 && rightPaddle.isSleeping === false && rightFired === false) {
+    } else if ((keyCode === 39 || x === 2 )&& rightPaddle.isSleeping === false && rightFired === false) {
       rightFired = true;
       Matter.Body.setAngularVelocity(rightPaddle, 1);
     }
@@ -215,10 +216,11 @@ import Matter from 'Matter-js';
 
   function releasePaddle(e) {
     let keyCode = e.keyCode;
-    if (keyCode === 37 ) {
+	var x = e.touches.length;
+    if (keyCode === 37 || x === 1) {
       leftFired = false;
       leftPaddle.isSleeping = false;
-    } else if (keyCode === 39) {
+    } else if (keyCode === 39|| x === 2) {
       rightFired = false;
       rightPaddle.isSleeping = false;
     }
@@ -236,7 +238,12 @@ import Matter from 'Matter-js';
     document.addEventListener("keydown", function keyDown(e) {
       firePaddle(e);
     }
-  );
+	);
+	document.addEventListener("touchstart", function touchstart(e) {
+		firePaddle(e);
+    }
+	);
+		
     document.addEventListener("keyup", function keyUp(e) {
       releasePaddle(e);
     }
